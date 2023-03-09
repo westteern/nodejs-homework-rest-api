@@ -19,6 +19,9 @@ const userSchema = new Schema(
       enum: ["starter", "pro", "business"],
       default: "starter",
     },
+    avatartURL: {
+      type: String,
+    },
     token: {
       type: String,
       default: "",
@@ -30,7 +33,7 @@ const userSchema = new Schema(
 userSchema.pre("save", async function () {
   if (this.isNew || this.isModified) {
     this.password = await bcrypt.hash(this.password, 10);
-  }
+  }  
 });
 
 userSchema.post("save", handleSaveErrors);
