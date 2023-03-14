@@ -26,6 +26,14 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   { versionKey: false, timestamp: true }
 );
@@ -33,14 +41,14 @@ const userSchema = new Schema(
 userSchema.pre("save", async function () {
   if (this.isNew || this.isModified) {
     this.password = await bcrypt.hash(this.password, 10);
-  }  
+  }
 });
 
 userSchema.post("save", handleSaveErrors);
 
 const registerSchema = Joi.object({
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ua"] } })
     .required(),
   password: Joi.string().required(),
   subscription: Joi.string().valid("starter", "pro", "business"),
@@ -48,7 +56,7 @@ const registerSchema = Joi.object({
 
 const loginSchema = Joi.object({
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ua"] } })
     .required(),
   password: Joi.string().required(),
 });
@@ -57,10 +65,17 @@ const subscriptionSchema = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business"),
 });
 
+const verifyShema = Joi.object({
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ua"] } })
+    .required(),
+});
+
 const schemas = {
   registerSchema,
   loginSchema,
   subscriptionSchema,
+  verifyShema,
 };
 
 const User = model("user", userSchema);

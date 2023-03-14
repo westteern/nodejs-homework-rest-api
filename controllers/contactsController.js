@@ -77,7 +77,7 @@ const removeContact = async (req, res) => {
     throw RequestError(404, "Not found");
   }
   res.json({
-    message: "Delete saccess",
+    message: "Delete success",
   });
 };
 
